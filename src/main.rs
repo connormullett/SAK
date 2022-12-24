@@ -1,5 +1,7 @@
 #![allow(unused)]
+mod json;
 
+use crate::json::Json;
 use std::{fmt::Display, path::PathBuf, str::FromStr};
 
 use structopt::StructOpt;
@@ -15,31 +17,6 @@ enum Sak {
     Hashing(Hashing),
     /// Encode/decode values from a variety of formats
     Encode(Encode),
-}
-
-#[derive(StructOpt, Debug)]
-enum Json {
-    /// Get a key from the document
-    Key {
-        key: String,
-
-        #[structopt(short="f", parse(from_os_str))]
-        input_file: PathBuf,
-    },
-
-    /// prettify JSON
-    Expand {
-        #[structopt(short, long, default_value="4")]
-        indent_size: i32,
-        #[structopt(parse(from_os_str))]
-        input_file: PathBuf,
-    },
-
-    /// compress the JSON to a single line minified version
-    Minify {
-        #[structopt(parse(from_os_str))]
-        input_file: PathBuf,
-    },
 }
 
 #[derive(StructOpt, Debug)]
@@ -114,5 +91,11 @@ impl Display for SakError {
 
 fn main() {
     let sak = Sak::from_args();
-    println!("{:?}", sak);
+
+    match sak {
+        Sak::Json(subcommand) => subcommand.run(),
+        Sak::Jwt(subcommand) => todo!(),
+        Sak::Hashing(subcommand) => todo!(),
+        Sak::Encode(subcommand) => todo!(),
+    }
 }
