@@ -1,7 +1,8 @@
 
 use minifier::json::minify_from_read;
 use structopt::StructOpt;
-use std::{path::PathBuf, fs::File, io::Read};
+use std::{path::PathBuf, fs::{self, File}, io::{self, Read}};
+use serde_json::Value;
 
 #[derive(StructOpt, Debug)]
 pub enum Json {
@@ -15,8 +16,6 @@ pub enum Json {
 
     /// prettify JSON
     Expand {
-        #[structopt(short, long, default_value="4")]
-        indent_size: i32,
         #[structopt(parse(from_os_str))]
         input_file: PathBuf,
     },
@@ -31,8 +30,14 @@ pub enum Json {
 impl Json {
     pub fn run(&self) {
         match self {
-            Json::Key { key, input_file } => todo!(),
-            Json::Expand { indent_size, input_file } => todo!(),
+            Json::Key { key, input_file } => {
+                let json = read_json(input_file.into()).unwrap();
+                println!("{}", &json[key]);
+            },
+            Json::Expand { input_file } => {
+                let json = read_json(input_file.into()).unwrap();
+                println!("{}", serde_json::to_string_pretty(&json).unwrap());
+            },
             Json::Minify { input_file } => {
                 let mut minified = String::new();
                 let mut file = File::open(input_file).expect("file not found");
@@ -41,4 +46,10 @@ impl Json {
             },
         }
     }
+}
+
+fn read_json(input_file: PathBuf) -> io::Result<Value> {
+    let json = fs::read_to_string(input_file)?;
+    let parsed: Value = serde_json::from_str(&json)?;
+    Ok(parsed)
 }
