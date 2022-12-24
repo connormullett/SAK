@@ -10,30 +10,50 @@ enum Sak {
     /// Json utility functions
     Json(Json),
     /// Json Web Token utilities
-    Jwt,
+    Jwt(Jwt),
     /// hashing functions
-    Hashing,
+    Hashing(Hashing),
     /// Encode/decode values from a variety of formats
     Encode(Encode),
 }
 
 #[derive(StructOpt, Debug)]
-struct Json {
+enum Json {
     /// Get a key from the document
-    #[structopt(long, short)]
-    key: Option<String>,
+    Key {
+        key: String,
+
+        #[structopt(short="f", parse(from_os_str))]
+        input_file: PathBuf,
+    },
 
     /// prettify JSON
-    #[structopt(long, short)]
-    expand: bool,
+    Expand {
+        #[structopt(short, long, default_value="4")]
+        indent_size: i32,
+        #[structopt(parse(from_os_str))]
+        input_file: PathBuf,
+    },
 
     /// compress the JSON to a single line minified version
+    Minify {
+        #[structopt(parse(from_os_str))]
+        input_file: PathBuf,
+    },
+}
+
+#[derive(StructOpt, Debug)]
+struct Jwt {}
+
+#[derive(StructOpt, Debug)]
+struct Hashing {
+    /// text to hash
     #[structopt(long, short)]
-    minify: bool, // minify the input file
+    data: Option<String>,
 
     /// The JSON file to operate on, use `-` for stdin
     #[structopt(parse(from_os_str))]
-    input_file: Vec<PathBuf>, // files to operate on
+    input_file: Option<PathBuf>,
 }
 
 #[derive(StructOpt, Debug)]
