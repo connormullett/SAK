@@ -1,9 +1,4 @@
-use std::{
-    fs,
-    io::{self, Write},
-    path::PathBuf,
-    str::FromStr,
-};
+use std::{fs, io, path::PathBuf, str::FromStr};
 
 use crate::error::SakError;
 use base64::{engine::general_purpose, Engine as _};
@@ -33,8 +28,6 @@ impl Encode {
     fn process(&self) -> Result<String, SakError> {
         let input_data = if self.input_file.display().to_string() == "-" {
             let mut buffer = String::new();
-            print!("input: ");
-            io::stdout().flush().unwrap();
             io::stdin().read_line(&mut buffer)?;
             buffer
         } else {
