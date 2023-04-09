@@ -37,7 +37,7 @@ impl Encode {
         match self.to {
             EncodingOption::Hex => Ok(self.convert_hex(input_data)),
             EncodingOption::Base64 => Ok(self.convert_base64(input_data)),
-            EncodingOption::ASCII => todo!(),
+            EncodingOption::ASCII => self.convert_ascii(input_data),
         }
     }
 
